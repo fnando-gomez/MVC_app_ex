@@ -88,6 +88,32 @@ class View {
 
         //Append the title, form and to-do list to the app
         this.app.append(this.title, this.form, this.todoList)
+
+        this._temporaryTodoText
+        this._initLocalListeners()
+    }
+
+    //For the editTodo feature
+
+    //Update temporary state
+    _initLocalListeners(){
+        this.todoList.addEventListener('input', event => {
+            if(event.target.className === 'editable'){
+                this._temporaryTodoText = event.target.innerText
+            }
+        })
+    }
+
+    //Send the completed value to the model
+    bindEditTodo(handler){
+        this.todoList.addEventListener('focusout', event => {
+            if (this._temporaryTodoText){
+                const id = parseInt(event.target.parentElement.id)
+
+                handler(id, this._temporaryTodoText)
+                this._temporaryTodoText = ''
+            }
+        })
     }
 
     get _todoText(){
@@ -170,7 +196,6 @@ class View {
         })
     }
 
-    //Edit feature. 
 
     bindDeleteTodo(handler){
         this.todoList.addEventListener('click', event => {
@@ -192,9 +217,6 @@ class View {
             }
         })
     }
-
-
-    
 }
 
 class Controller {
@@ -204,6 +226,7 @@ class Controller {
 
     //Explicit -this- binding
     this.view.bindAddTodo(this.handleAddTodo)
+    this.view.bindEditTodo(this.handleEditTodo)
     this.view.bindDeleteTodo(this.handleDeleteTodo)
     this.view.bindToggleTodo(this.handleToggleTodo)
 
