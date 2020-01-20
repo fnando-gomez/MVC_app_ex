@@ -1,11 +1,19 @@
 
 class Model {
     constructor(){
-    //The state of the model, array of to-do objects, prepopulated with some data
-     this.todos = [
-        {id: 1, text:"Go to the GYM", complete: false},
-        {id: 2, text:"Visit El Pariente & eat tacos", complete: false}
-        ]
+        
+        this.todos = JSON.parse(localStorage.getItem('todos')) || []
+        
+        //The state of the model, array of to-do objects, prepopulated with some data
+        // this.todos = [
+        //     {id: 1, text:"Go to the GYM", complete: false},
+        //     {id: 2, text:"Visit El Pariente & eat tacos", complete: false}
+        // ]
+    }
+
+    _commit(todos){
+        this.onTodoListChanged(todos)
+        localStorage.setItem('todos', JSON.stringify(todos))
     }
 
     bindTodoListChanged(callback){
@@ -20,6 +28,7 @@ class Model {
         }
         this.todos.push(todo)
         this.onTodoListChanged(this.todos)
+        this._commit(this.todos)
     }
 
     //Map through all todos and replace the text of the todo with specified id | IOW --> Edit the "todo"
@@ -28,6 +37,7 @@ class Model {
         todo.id === id ? {id: todo.id, text: updatedText, complete: todo.complete} : todo
         )
         this.onTodoListChanged(this.todos)
+        this._commit(this.todos)
     }
 
     //Filter a todo out of the array bi id
@@ -35,6 +45,7 @@ class Model {
         this.todos = this.todos.filter(todo => todo.id !== id)
 
         this.onTodoListChanged(this.todos)
+        this._commit(this.todos)
     }
 
     //Flip the complete boolean on the specific todo
@@ -43,6 +54,7 @@ class Model {
         todo.id === id ? {id: todo.id, text: todo.text,  complete: !todo.complete} : todo
         )
         this.onTodoListChanged(this.todos)
+        this._commit(this.todos)
     }
 
 }
@@ -108,7 +120,7 @@ class View {
         }
 
         //Show default message
-        if (todos.lenght === 0){
+        if (todos.lenght == 0){
             const p = this.createElement('p')
             p.textContent = "Nothing to do! Do you want to add a task?"
             this.todoList.append(p)
@@ -158,6 +170,8 @@ class View {
         })
     }
 
+    //Edit feature. 
+
     bindDeleteTodo(handler){
         this.todoList.addEventListener('click', event => {
             if(event.target.className === 'delete'){
@@ -178,6 +192,8 @@ class View {
             }
         })
     }
+
+
     
 }
 
